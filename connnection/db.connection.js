@@ -7,7 +7,7 @@
 // console.log("mongodb server is connected ");
 
 import{ MongoClient, ServerApiVersion }  from 'mongodb';
-const uri =process.env.URL || "mongodb+srv://sakshammalviya12345:ByRq14zV6ndzh0IG@service-app.oop9d.mongodb.net/?retryWrites=true&w=majority&appName=service-app";
+const uri = process.env.URL || "mongodb+srv://sakshammalviya12345:ByRq14zV6ndzh0IG@service-app.oop9d.mongodb.net/service-app?retryWrites=true&w=majority"
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
