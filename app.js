@@ -11,7 +11,6 @@ import subCategoryRoute from "./routes/subCategoryRoute.js"
 import serviceRoute from "./routes/serviceRoute.js"
 import BookingRoute from "./routes/bookingRoute.js"
 import PaymentRoute from "./routes/paymentRoute.js"
-
 // make app
 const app  = express()
 
