@@ -39,7 +39,7 @@ app.use("/service",serviceRoute);
 app.use("/booking",BookingRoute);
 app.use("/payment",PaymentRoute);
 
-app.listen(8989,()=>{
+app.listen(process.env.PORT || 8989,()=>{
     console.log("http://localhost:8989/user");
     
 })
