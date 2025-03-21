@@ -68,9 +68,15 @@ export let registerUser = async(req,res,next)=>{
     //login user method.  
 export let loginUser = async (req,res)=>{
     let {email,password} = req.body
+    console.log("password is : ",password);
+    
     try{
         var user_list = await userSchemaModel.find({email})   
         var isMatch = await bcrypt.compare(password,user_list[0].password)
+        console.log("ismatch",isMatch);
+        if(!isMatch || user_list.length == 0 ){
+            return res.status(200).json({"status":false,"message":"Invalid email and password"})
+        }
         if(isMatch || user_list.length != 0){
                 var key = rs.generate()
                 var payload = {"subject":user_list[0].email ,"subject2":user_list[0].user_id};
