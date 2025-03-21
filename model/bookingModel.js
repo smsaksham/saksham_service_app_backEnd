@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import '../connnection/db.connection.js'
 const bookingSchema = new mongoose.Schema(
     {
-        booking_id: { type: String, required: true, unique: true }, // Unique Booking ID
+        booking_id: { type: Number, required: true,  unique: true }, // Unique Booking ID
         user_id: { type: Number, ref: "user_collections", required: true }, // Customer ID
         business_id: { type: Number, ref: "business_collections", required: true }, // Service Provider ID
         service_name: { type: String, required: true }, // Example: "Plumbing Service"

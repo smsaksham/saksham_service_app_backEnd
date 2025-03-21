@@ -7,7 +7,7 @@ export const saveBooking = async (req, res) => {
         const bookingDetails = req.body;
         const bookingList = await BookingModel.find();
         const len = bookingList.length;
-        const booking_id = len === 0 ? 1 : bookingList[len - 1].booking_id + 1;
+        const booking_id = len == 0 ? 1 : bookingList[len - 1].booking_id + 1;
         
         const newBooking = { ...bookingDetails, booking_id };
         await BookingModel.create(newBooking);
