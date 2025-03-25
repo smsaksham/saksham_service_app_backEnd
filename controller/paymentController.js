@@ -1,76 +1,3 @@
-// import '../connnection/db.connection.js';
-// import Payment from "../model/paymentModel.js"
-// import rs from "randomstring"
-// import Razorpay from 'razorpay'
-
-// const razorpay = new Razorpay({
-//     key_id: "rzp_test_FZQ5WW1k0Tv6R4",
-//     key_secret: "BsLoSvlmsFCrpJKI0rglm39O"
-// });
-
-// // var instance = new Razorpay({ key_id: 'YOUR_KEY_ID', key_secret: 'YOUR_SECRET' })
-
-// export const initiatePayment = async (req, res) => {    
-//     try {
-//         const { booking_id, amount, payment_method } = req.body;
-
-//         // Create Razorpay Order
-//         const options = {
-//             amount: amount * 100, // Convert to paise
-//             currency: "INR",
-//             receipt: rs.generate(),
-//             payment_capture: 1
-//         };
-
-//         const order = await razorpay.orders.create(options);
-
-//         // Save payment details in the database
-//         const payment = new Payment({
-//             payment_id: order.id,
-//             booking_id,
-//             amount,
-//             payment_method,
-//             status: "Pending"
-//         });
-
-//         await payment.save();
-
-//         res.status(201).json({
-//             status: "success",
-//             message: "Payment initiation successful",
-//             payment,
-//             status_code: 201
-//         });
-//     } catch (error) {
-//         console.error("Payment initiation failed:", error);
-//         res.status(500).json({
-//             status: "error",
-//             message: "Payment initiation failed",
-//             error: error.message
-//         });
-//     }
-// };
-
-
-
-// export const AllOrders = async (req, res, next) => {
-//     try {
-//         var resp = await razorpay.orders.all(); // Pass options correctly
-
-//         res.status(200).json({
-//             status: true,
-//             message: "Payment data fetched successfully",
-//             data: resp
-//         });
-//     } catch (err) {
-//         console.error("Error fetching orders:", err);
-//         res.status(500).json({
-//             status: false,
-//             message: "Failed to fetch payment data",
-//             error: err.message
-//         });
-//     }
-// };
 import '../connnection/db.connection.js';
 import Payment from "../model/paymentModel.js";
 import rs from "randomstring";
@@ -87,7 +14,8 @@ const razorpay = new Razorpay({
 export const initiatePayment = async (req, res) => {
     try {
         const { booking_id, amount, payment_method } = req.body;
-
+        console.log("data is ",booking_id,":",amount,":",payment_method);
+        
         // ✅ Create Razorpay Order
         const options = {
             amount: amount * 100, // Convert to paise
@@ -97,24 +25,26 @@ export const initiatePayment = async (req, res) => {
         };
 
         const order = await razorpay.orders.create(options);
-
+        console.log('order is :',order);
+        
         // ✅ Save payment details in DB
-        const payment = new Payment({
+        const payment = {
             payment_id: order.id,
             booking_id,
             amount,
             payment_method,
             status: "Pending"
-        });
+        }
 
-        await payment.save();
+        var resp = await Payment.create(payment)
 
         res.status(201).json({
             status: "success",
             message: "Payment initiation successful",
             payment,
             order,
-            status_code: 201
+            status_code: 201,
+            "data":resp
         });
     } catch (error) {
         console.error("Payment initiation failed:", error);
@@ -130,7 +60,7 @@ export const verifyPayment = async (req, res) => {
     try {
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-        // ✅ Verify payment signature
+        // Verify payment signature
         const generated_signature = crypto
             .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
             .update(razorpay_order_id + "|" + razorpay_payment_id)
@@ -154,6 +84,7 @@ export const verifyPayment = async (req, res) => {
     }
 };
 
+
 export const AllOrders = async (req, res) => {
     try {
         const options = {
@@ -169,6 +100,7 @@ export const AllOrders = async (req, res) => {
             message: "Payment data fetched successfully",
             data: resp
         });
+        
     } catch (err) {
         console.error("Error fetching orders:", err);
         res.status(500).json({

@@ -10,8 +10,8 @@ export const saveBooking = async (req, res) => {
         const booking_id = len == 0 ? 1 : bookingList[len - 1].booking_id + 1;
         
         const newBooking = { ...bookingDetails, booking_id };
-        await BookingModel.create(newBooking);
-        res.status(200).json({ status: true, message: "Booking saved successfully" });
+        var resp = await BookingModel.create(newBooking);
+        res.status(200).json({ status: true, message: "Booking saved successfully","data":resp });
     } catch (err) {
         res.status(500).json({ status: false, message: "Booking not saved", error: err.message });
     }
@@ -70,19 +70,27 @@ export const updateBooking = async (req, res) => {
 };
 
 // Delete a booking
+
 export const deleteBooking = async (req, res) => {
     try {
-        const { booking_id } = req.params;
-        const deletedBooking = await BookingModel.findByIdAndDelete(booking_id);
+        const { booking_id } = req.body;
+        console.log("booking id is : ",booking_id);
         
-        if (!deletedBooking) {
+        const deletedBookingList = await BookingModel.find(booking_id);
+        console.log("delete list",deletedBookingList);
+        
+        if (!deletedBookingList) {
             return res.status(404).json({ status: false, message: "Booking not found" });
         }
+        
+        const deletedBooking = await BookingModel.deleteOne(booking_id)
+
         res.status(200).json({ status: true, message: "Booking deleted successfully" });
     } catch (error) {
         res.status(500).json({ status: false, message: "Server error", error: error.message });
     }
 };
+
 
 // Search booking by service name
 export const searchBooking = async (req, res) => {

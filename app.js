@@ -14,7 +14,7 @@ import PaymentRoute from "./routes/paymentRoute.js"
 import mongoose from "mongoose"
 // make app
 const app  = express()
-mongoose.connect("mongodb+srv://sakshammalviya12345:ByRq14zV6ndzh0IG@service-app.oop9d.mongodb.net/service-app?retryWrites=true&w=majority")
+// mongoose.connect("mongodb+srv://sakshammalviya12345:ByRq14zV6ndzh0IG@service-app.oop9d.mongodb.net/service-app?retryWrites=true&w=majority")
 // Configure CORS to allow requests from http://localhost:5173
 app.use(cors({
 
