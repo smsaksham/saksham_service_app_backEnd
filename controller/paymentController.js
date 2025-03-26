@@ -3,20 +3,20 @@ import Payment from "../model/paymentModel.js";
 import rs from "randomstring";
 import Razorpay from 'razorpay';
 import crypto from "crypto";
-
-
-// 🔹 Initialize Razorpay
+import BookingModel from '../model/bookingModel.js';
+// Initialize Razorpay
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_FZQ5WW1k0Tv6R4",
     key_secret: process.env.RAZORPAY_KEY_SECRET || "BsLoSvlmsFCrpJKI0rglm39O"
 });
+const RAZORPAY_SECRET = "BsLoSvlmsFCrpJKI0rglm39O"
 
 export const initiatePayment = async (req, res) => {
     try {
         const { booking_id, amount, payment_method } = req.body;
         console.log("data is ",booking_id,":",amount,":",payment_method);
         
-        // ✅ Create Razorpay Order
+        //  Create Razorpay Order
         const options = {
             amount: amount * 100, // Convert to paise
             currency: "INR",
@@ -27,7 +27,7 @@ export const initiatePayment = async (req, res) => {
         const order = await razorpay.orders.create(options);
         console.log('order is :',order);
         
-        // ✅ Save payment details in DB
+        //  Save payment details
         const payment = {
             payment_id: order.id,
             booking_id,
@@ -58,11 +58,15 @@ export const initiatePayment = async (req, res) => {
 
 export const verifyPayment = async (req, res) => {
     try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature , booking_id } = req.body;
+       console.log("rozar pay id ",razorpay_order_id," : ",razorpay_payment_id,":",razorpay_signature,":",booking_id);
+    
+       if (!RAZORPAY_SECRET) {
+        throw new Error("Razorpay secret key is missing!");
+      }
         // Verify payment signature
         const generated_signature = crypto
-            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+            .createHmac("sha256", RAZORPAY_SECRET)
             .update(razorpay_order_id + "|" + razorpay_payment_id)
             .digest("hex");
 
@@ -70,7 +74,15 @@ export const verifyPayment = async (req, res) => {
             return res.status(400).json({ status: "error", message: "Payment verification failed" });
         }
 
-        // ✅ Update payment status in DB
+        // Update booking paymentr status 
+       var reso =  await BookingModel.findOneAndUpdate(
+            { booking_id : booking_id },
+            { payment_status: "paid", status:"confirmed" },
+            { new: true }
+        );
+        console.log("booking update ios : ",reso);
+        
+        //  Update payment status in DB
         await Payment.findOneAndUpdate(
             { payment_id: razorpay_order_id },
             { status: "Completed", transaction_id: razorpay_payment_id },

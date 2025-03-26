@@ -53,3 +53,21 @@ export var viewAllServices = async(req,res,next)=>{
   }
 
 }
+
+export const ViewServiceDetails =async(req,res)=>{
+  try {
+    const { service_id } = req.params;
+    console.log("service id is: ",service_id);
+    
+    const service = await ServiceSchemaModel.find({"service_id":service_id}); // For MongoDB
+
+    if (!service) {
+      return res.status(404).json({ status: false, message: "Service not found" });
+    }
+
+    res.status(200).json({ status: true, data: service });
+  } catch (error) {
+    console.error("Error fetching service details:", error);
+    res.status(500).json({ status: false, message: "Server error" });
+  }
+}
