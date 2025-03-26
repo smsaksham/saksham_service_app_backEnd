@@ -76,7 +76,7 @@ export const verifyPayment = async (req, res) => {
 
         // Update booking paymentr status 
        var reso =  await BookingModel.findOneAndUpdate(
-            { booking_id : booking_id },
+            { "booking_id" : booking_id },
             { payment_status: "paid", status:"confirmed" },
             { new: true }
         );
